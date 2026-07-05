@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Activity Logger</string>
+    <string name="monitor_notification_title">Activity logging active</string>
+    <string name="monitor_notification_text">Recording app usage and outgoing calls</string>
+    <string name="monitor_channel_name">Activity monitor</string>
+    <string name="monitor_channel_description">Keeps activity logging running in the background</string>
+</resources>
