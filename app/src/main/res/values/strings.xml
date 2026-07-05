@@ -5,4 +5,5 @@
     <string name="monitor_notification_text">Recording app usage and outgoing calls</string>
     <string name="monitor_channel_name">Activity monitor</string>
     <string name="monitor_channel_description">Keeps activity logging running in the background</string>
+    <string name="action_stop">Stop</string>
 </resources>

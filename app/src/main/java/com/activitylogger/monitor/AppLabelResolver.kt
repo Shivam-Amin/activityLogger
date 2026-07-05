@@ -15,11 +15,25 @@ class AppLabelResolver @Inject constructor(
     private val labelCache = mutableMapOf<String, String>()
 
     fun resolveAppLabel(packageName: String): String {
-        return labelCache.getOrPut(packageName) {
-            runCatching {
+        synchronized(labelCache) {
+            val cached = labelCache[packageName]
+            if (cached != null) return cached
+
+            if (labelCache.size >= MAX_CACHE_SIZE) {
+                labelCache.clear()
+            }
+
+            val label = runCatching {
                 val applicationInfo = packageManager.getApplicationInfo(packageName, 0)
                 packageManager.getApplicationLabel(applicationInfo).toString()
             }.getOrDefault(packageName)
+
+            labelCache[packageName] = label
+            return label
         }
+    }
+
+    companion object {
+        private const val MAX_CACHE_SIZE = 500
     }
 }

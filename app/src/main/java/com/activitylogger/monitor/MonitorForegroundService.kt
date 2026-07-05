@@ -46,6 +46,10 @@ class MonitorForegroundService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == ACTION_STOP_MONITOR) {
+            stopSelf()
+            return START_NOT_STICKY
+        }
         startForeground(NOTIFICATION_ID, buildNotification())
         monitoringStateStore.setMonitoringActive(true)
         startMonitoring()
@@ -110,11 +114,22 @@ class MonitorForegroundService : Service() {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        val stopIntent = Intent(this, MonitorForegroundService::class.java).apply {
+            action = ACTION_STOP_MONITOR
+        }
+        val stopPendingIntent = PendingIntent.getService(
+            this,
+            1,
+            stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle(getString(R.string.monitor_notification_title))
             .setContentText(getString(R.string.monitor_notification_text))
             .setSmallIcon(R.drawable.ic_launcher_foreground)
             .setContentIntent(pendingIntent)
+            .addAction(R.drawable.ic_launcher_foreground, getString(R.string.action_stop), stopPendingIntent)
             .setOngoing(true)
             .build()
     }
@@ -123,6 +138,7 @@ class MonitorForegroundService : Service() {
         private const val CHANNEL_ID = "activity_monitor_channel"
         private const val NOTIFICATION_ID = 1001
         private const val POLL_INTERVAL_MILLIS = 5_000L
+        private const val ACTION_STOP_MONITOR = "com.activitylogger.ACTION_STOP_MONITOR"
 
         fun createStartIntent(context: Context): Intent {
             return Intent(context, MonitorForegroundService::class.java)
